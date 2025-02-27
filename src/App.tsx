@@ -24,7 +24,7 @@ function App() {
       0.1,
       1000
     );
-    camera.position.set(-6, 0, 32);
+    camera.position.set(-6, 5, 32);
 
     // 🎞️ Renderer
     const renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({
@@ -49,17 +49,29 @@ function App() {
 
     // 🎬 アニメーション管理用ミキサー
     const mixers: THREE.AnimationMixer[] = [];
+    const updateCallbacks: ((
+      deltaTime: number,
+      elapsedTime: number
+    ) => void)[] = [];
 
     // 🚀 モデルの読み込み
-    SceneModel(scene, mixers);
+    SceneModel(scene, mixers, updateCallbacks);
     Bird(scene, mixers);
 
     // ⏳ アニメーションループ
     const clock = new THREE.Clock();
     const tick = () => {
       const deltaTime = clock.getDelta();
+      const elapsedTime = clock.getElapsedTime();
+
       renderer.render(scene, camera);
+
+      // アニメーションを更新
       mixers.forEach((mixer) => mixer.update(deltaTime));
+
+      // モデルのカスタムアニメーションを更新（円運動）
+      updateCallbacks.forEach((update) => update(deltaTime, elapsedTime));
+
       requestAnimationFrame(tick);
     };
     tick();
