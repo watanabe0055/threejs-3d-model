@@ -7,7 +7,7 @@ function Bird(scene: THREE.Scene, mixers: THREE.AnimationMixer[]) {
   gltfLoader.load("./magic/scene.gltf", (gltf) => {
     const model = gltf.scene;
     model.scale.set(10, 10, 10);
-    model.position.set(0, 2, 0); // Y座標を SceneModel に合わせる
+    model.position.set(0, 3, 0); // Y座標を SceneModel に合わせる
     model.rotateY(-Math.PI / 3);
     scene.add(model);
 
