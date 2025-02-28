@@ -18,3 +18,9 @@ canvas {
   left: 16%;
   translate: transform(-16%, -50%);
 }
+.mainContent2 {
+  position: absolute;
+  top: 57%;
+  left: 16%;
+  translate: transform(-16%, -50%);
+}
