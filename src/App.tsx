@@ -4,6 +4,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import SceneModel from "./SceneModel";
 import Bird from "./Bird";
+import Dinosaurs from "./Dinosaurs";
 
 function App() {
   useEffect(() => {
@@ -57,6 +58,7 @@ function App() {
     // 🚀 モデルの読み込み
     SceneModel(scene, mixers, updateCallbacks);
     Bird(scene, mixers);
+    Dinosaurs(scene, mixers, updateCallbacks);
 
     // ⏳ アニメーションループ
     const clock = new THREE.Clock();
