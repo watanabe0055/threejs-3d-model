@@ -28,7 +28,7 @@ function Dinosaurs(
 
     // 🌍 円運動を行うアップデート関数を登録
     const radius = 10;
-    const speed = 0.5;
+    const speed = 1;
 
     updateCallbacks.push((_, elapsedTime) => {
       const angle = elapsedTime * speed;

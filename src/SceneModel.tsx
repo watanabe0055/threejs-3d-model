@@ -1,17 +1,37 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
+type KeyState = { [key: string]: boolean };
+
 function SceneModel(
   scene: THREE.Scene,
   mixers: THREE.AnimationMixer[],
-  updateCallbacks: ((deltaTime: number, elapsedTime: number) => void)[]
+  updateCallbacks: ((deltaTime: number) => void)[]
 ) {
   const gltfLoader = new GLTFLoader();
+  let model: THREE.Object3D | null = null;
+
+  // 🚀 キーボードの入力状態を管理
+  const keyState: KeyState = {
+    ArrowUp: false,
+    ArrowDown: false,
+    ArrowLeft: false,
+    ArrowRight: false,
+  };
+
+  // 🎮 キー入力イベントを設定
+  window.addEventListener("keydown", (event) => {
+    if (keyState.hasOwnProperty(event.key)) keyState[event.key] = true;
+  });
+
+  window.addEventListener("keyup", (event) => {
+    if (keyState.hasOwnProperty(event.key)) keyState[event.key] = false;
+  });
 
   gltfLoader.load("./animation/scene.gltf", (gltf) => {
-    const model = gltf.scene;
+    model = gltf.scene;
     model.scale.set(0.001, 0.001, 0.001);
-    model.position.set(0, -2, 0); // Y座標を -2 に調整（Bird に合わせる）
+    model.position.set(0, -2, 0);
     scene.add(model);
 
     if (gltf.animations.length > 0) {
@@ -26,21 +46,21 @@ function SceneModel(
       console.warn("SceneModel: アニメーションが見つかりませんでした");
     }
 
-    // 🌍 円運動を行うアップデート関数を登録
-    const radius = 10;
-    const speed = 1;
+    // 🎯 キーボードで移動する処理
+    updateCallbacks.push((deltaTime) => {
+      if (!model) return;
 
-    updateCallbacks.push((_, elapsedTime) => {
-      const angle = elapsedTime * speed;
-      const nextAngle = (elapsedTime + 0.01) * speed;
+      const speed = 5 * deltaTime; // 移動スピード
+      const rotationSpeed = 2 * deltaTime; // 回転スピード
 
-      const x = radius * Math.cos(angle);
-      const z = radius * Math.sin(angle);
-      const nextX = radius * Math.cos(nextAngle);
-      const nextZ = radius * Math.sin(nextAngle);
+      const moveDirection = new THREE.Vector3();
 
-      model.position.set(x, -2, z); // Y座標を統一
-      model.lookAt(nextX, -2, nextZ);
+      if (keyState["ArrowUp"]) moveDirection.z += speed;
+      if (keyState["ArrowDown"]) moveDirection.z -= speed;
+      if (keyState["ArrowLeft"]) model.rotation.y += rotationSpeed;
+      if (keyState["ArrowRight"]) model.rotation.y -= rotationSpeed;
+
+      model.translateZ(moveDirection.z);
     });
   });
 

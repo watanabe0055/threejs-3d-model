@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import "./App.css";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/Addons.js";
 import SceneModel from "./SceneModel";
@@ -25,7 +24,7 @@ function App() {
       0.1,
       1000
     );
-    camera.position.set(-6, 5, 32);
+    camera.position.set(-6, 0, 32);
 
     // 🎞️ Renderer
     const renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({
@@ -50,15 +49,19 @@ function App() {
 
     // 🎬 アニメーション管理用ミキサー
     const mixers: THREE.AnimationMixer[] = [];
-    const updateCallbacks: ((
+
+    const updateLoopCallbacks: ((
       deltaTime: number,
       elapsedTime: number
     ) => void)[] = [];
 
+    // ⏳ 毎フレーム更新する処理のリスト
+    const updateCallbacks: ((deltaTime: number) => void)[] = [];
+
     // 🚀 モデルの読み込み
     SceneModel(scene, mixers, updateCallbacks);
+    Dinosaurs(scene, mixers, updateLoopCallbacks);
     Bird(scene, mixers);
-    Dinosaurs(scene, mixers, updateCallbacks);
 
     // ⏳ アニメーションループ
     const clock = new THREE.Clock();
@@ -67,12 +70,12 @@ function App() {
       const elapsedTime = clock.getElapsedTime();
 
       renderer.render(scene, camera);
-
-      // アニメーションを更新
       mixers.forEach((mixer) => mixer.update(deltaTime));
-
       // モデルのカスタムアニメーションを更新（円運動）
-      updateCallbacks.forEach((update) => update(deltaTime, elapsedTime));
+      updateLoopCallbacks.forEach((update) => update(deltaTime, elapsedTime));
+
+      // 各オブジェクトの更新処理を実行
+      updateCallbacks.forEach((callback) => callback(deltaTime));
 
       requestAnimationFrame(tick);
     };
